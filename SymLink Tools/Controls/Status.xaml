@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="18" d:DesignWidth="800">
     <Grid DataContext="{Binding ElementName=WindowRoot}">
-        <TextBlock Text="{Binding Path=StatusText, Mode=TwoWay}" Height="18"/>
+        <TextBlock Text="{Binding Path=StatusText, Mode=TwoWay}" Height="18" Margin="5,0,0,0"/>
     </Grid>
 </UserControl>

@@ -12,14 +12,14 @@ namespace SymLink_Tools
     {
         public SymLink()
         {
-            CMDProcess.OutputDataReceived += CMDProcess_OutputDataReceived;
+            CMD.OutputDataReceived += CMDProcess_OutputDataReceived;
         }
 
         public event EventHandler<string> Output;
 
         #region Objects / Static Objects
 
-        private Process CMDProcess = new Process
+        private Process CMD = new Process
         {
             StartInfo = new ProcessStartInfo(@"C:\Windows\System32\cmd.exe"),
             EnableRaisingEvents = true,
@@ -30,6 +30,17 @@ namespace SymLink_Tools
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Gets the arguments for creating a file link.
+        /// </summary>
+        /// <param name="mainLocation">Actual location of the file.</param>
+        /// <param name="newLocation">New Symlink location.</param>
+        /// <returns>Arguments</returns>
+        private string FileArgument(string mainLocation, string newLocation)
+        {
+            return $@"{DefaultCommand} ""{newLocation}"" ""{mainLocation}"" ";
+        }
 
         /// <summary>
         /// 
@@ -56,9 +67,15 @@ namespace SymLink_Tools
 
         private void RunArguments(string args)
         {
-            CMDProcess.StartInfo.Arguments = args;
-            CMDProcess.Start();
-            Output?.Invoke(this, $"Running: {CMDProcess.StartInfo.FileName} {CMDProcess.StartInfo.Arguments}");
+            CMD.StartInfo.Arguments = args;
+            CMD.StartInfo.RedirectStandardOutput = true;
+            CMD.StartInfo.UseShellExecute = false;
+            CMD.StartInfo.CreateNoWindow = true;
+            CMD.Start();
+
+            CMD.BeginErrorReadLine();
+            CMD.BeginOutputReadLine();
+            Output?.Invoke(this, $"Running: {CMD.StartInfo.FileName} {CMD.StartInfo.Arguments}");
         }
 
         private void CMDProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)

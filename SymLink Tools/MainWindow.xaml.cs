@@ -39,7 +39,7 @@ namespace SymLink_Tools
         #region Properties
 
         private string _realfolderpath;
-        public string RealFolderPath
+        public string RealPath
         {
             set
             {
@@ -50,7 +50,7 @@ namespace SymLink_Tools
         }
 
         private string _symlinkfolderpath;
-        public string SymLinkFolderPath
+        public string SymLinkPath
         {
             set
             {
@@ -64,39 +64,39 @@ namespace SymLink_Tools
 
         #region Main Tab: Buttons
 
-        private void OpenRealFolder(object sender = null, EventArgs e = null) => Process.Start(RealFolderPath);
+        private void OpenRealFolder(object sender = null, EventArgs e = null) => Process.Start(RealPath);
 
         private void CreateSymlinks(object sender = null, EventArgs e = null)
         {
             if (RootFoldersRadio.IsChecked ?? false)
-                SymLink.CreateFolder(RealFolderPath, SymLinkFolderPath);
+                SymLink.CreateFolder(RealPath, SymLinkPath);
             if (SubfoldersRadio.IsChecked ?? false)
-                SymLink.CreateSubfolders(RealFolderPath, SymLinkFolderPath);
+                SymLink.CreateSubfolders(RealPath, SymLinkPath);
         }
 
         private void PrintFolders(object sender = null, EventArgs e = null)
         {
             if (RootFoldersRadio.IsChecked ?? false)
             {
-                Console.Log($"{SymLinkFolderPath}");
-                new Windows.DirectoryListing(SymLinkFolderPath).ShowDialog();
+                Console.Log($"{SymLinkPath}");
+                new Windows.DirectoryListing(SymLinkPath).ShowDialog();
             }
             if (SubfoldersRadio.IsChecked ?? false)
             {
-                var directories = Directory.GetDirectories(RealFolderPath).ToList()
-                    .ConvertAll(dir => $"{SymLinkFolderPath}\\{new DirectoryInfo(dir).Name}");
+                var directories = Directory.GetDirectories(RealPath).ToList()
+                    .ConvertAll(dir => $"{SymLinkPath}\\{new DirectoryInfo(dir).Name}");
                 new Windows.DirectoryListing(directories).ShowDialog();
             }
         }
 
         private void FindReal(object sender = null, EventArgs e = null)
         {
-            RealFolderPath = StorageHelper.FindFolder();
+            RealPath = StorageHelper.FindFolder();
         }
 
         private void FindSym(object sender = null, EventArgs e = null)
         {
-            SymLinkFolderPath = StorageHelper.FindFolder();
+            SymLinkPath = StorageHelper.FindFolder();
         }
 
         #endregion
@@ -114,11 +114,7 @@ namespace SymLink_Tools
 
         #region Misc.
 
-        private void Close(object sender = null, EventArgs e = null)
-        {
-            this.Hide();
-            Environment.Exit(0x0);
-        }
+        private void Close(object sender, EventArgs e) => Close();
 
         private void WindowRoot_Loaded(object sender, RoutedEventArgs e)
         {
@@ -127,10 +123,5 @@ namespace SymLink_Tools
         }
 
         #endregion
-
-        private void WindowRoot_Closed(object sender, EventArgs e)
-        {
-            Environment.Exit(0x0);
-        }
     }
 }
