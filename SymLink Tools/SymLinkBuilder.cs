@@ -8,11 +8,12 @@ using System.IO;
 
 namespace SymLink_Tools
 {
-    public class SymLink
+    public class SymLinkBuilder
     {
-        public SymLink()
+        public SymLinkBuilder()
         {
-            CMD.OutputDataReceived += CMDProcess_OutputDataReceived;
+            CMD.OutputDataReceived += OutputDataHandler;
+            CMD.ErrorDataReceived += OutputDataHandler;
         }
 
         public event EventHandler<string> Output;
@@ -37,9 +38,21 @@ namespace SymLink_Tools
         /// <param name="mainLocation">Actual location of the file.</param>
         /// <param name="newLocation">New Symlink location.</param>
         /// <returns>Arguments</returns>
-        private string FileArgument(string mainLocation, string newLocation)
+        private string GetFileArgument(string mainLocation, string newLocation)
         {
             return $@"{DefaultCommand} ""{newLocation}"" ""{mainLocation}"" ";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mainRoot">Name of the original folder root.</param>
+        /// <param name="newRoot">Name of the new folder root for the Symlink.</param>
+        /// <param name="subfileName">Name of the subfile.</param>
+        /// <returns></returns>
+        private string GetSubfileArgument(string mainRoot, string newRoot, string subfileName)
+        {
+            return $@"{DefaultCommand} ""{newRoot}\{subfileName}"" ""{mainRoot}\{subfileName}"" ";
         }
 
         /// <summary>
@@ -69,36 +82,59 @@ namespace SymLink_Tools
         {
             CMD.StartInfo.Arguments = args;
             CMD.StartInfo.RedirectStandardOutput = true;
+            CMD.StartInfo.RedirectStandardError = true;
             CMD.StartInfo.UseShellExecute = false;
             CMD.StartInfo.CreateNoWindow = true;
             CMD.Start();
 
             CMD.BeginErrorReadLine();
             CMD.BeginOutputReadLine();
-            Output?.Invoke(this, $"Running: {CMD.StartInfo.FileName} {CMD.StartInfo.Arguments}");
+
+            Debugger.Log(0, this.GetType().Name, $"Running: {CMD.StartInfo.FileName} {CMD.StartInfo.Arguments}");
         }
 
-        private void CMDProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void OutputDataHandler(object sender, DataReceivedEventArgs e)
         {
-            Output?.Invoke(sender, e.Data.ToString());
+            if (!string.IsNullOrWhiteSpace(e.Data))
+                Output?.Invoke(sender, e.Data);
         }
 
         #endregion
 
         #region Public Methods
 
+        public void CreateFile(string realPath, string newPath)
+        {
+            Output?.Invoke(this, $"Creating symlink for {realPath} to {newPath}");
+            RunArguments(GetFileArgument(realPath, newPath));
+
+            new Windows.DirectoryListing(newPath).Show();
+        }
+
+        public void CreateSubfiles(string realPath, string newPath)
+        {
+            Output?.Invoke(this, $"Creating symlinks from {realPath}");
+
+            var files = Directory.GetFiles(realPath);
+            foreach (string file in files)
+                RunArguments(GetSubfileArgument(realPath, newPath, file));
+            Output?.Invoke(this, $"Successfully created {files.Length} symlinks in {newPath}.");
+
+            var symFiles = files.ToList().ConvertAll(file => $"{newPath}\\{new FileInfo(file).Name}");
+            new Windows.DirectoryListing(symFiles);
+        }
+
         public void CreateFolder(string realPath, string newPath)
         {
             Output?.Invoke(this, $"Creating symlink for {realPath} to {newPath}");
             RunArguments(GetFolderArgument(realPath, newPath));
-            Output?.Invoke(this, $"Successfully created Symlink at {newPath}.");
 
             new Windows.DirectoryListing(newPath).Show();
         }
 
         public void CreateSubfolders(string realPath, string newPath)
         {
-            Output?.Invoke(this, $"Creating subfolders from {realPath}");
+            Output?.Invoke(this, $"Creating symlinks from {realPath}");
             var directories = Directory.GetDirectories(realPath);
             foreach (string subfolder in directories)
                 RunArguments(GetSubfolderArgument(realPath, newPath, new DirectoryInfo(subfolder).Name));   

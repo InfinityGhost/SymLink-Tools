@@ -34,30 +34,30 @@ namespace SymLink_Tools
             SymLink.Output += Console.Log;
         }
 
-        private SymLink SymLink = new SymLink();
+        private SymLinkBuilder SymLink = new SymLinkBuilder();
 
         #region Properties
 
-        private string _realfolderpath;
+        private string _realpath;
         public string RealPath
         {
             set
             {
-                _realfolderpath = value.Trim('"', '\\');
+                _realpath = value.Trim('"', '\\');
                 NotifyPropertyChanged();
             }
-            get => _realfolderpath;
+            get => _realpath;
         }
 
-        private string _symlinkfolderpath;
+        private string _symlinkpath;
         public string SymLinkPath
         {
             set
             {
-                _symlinkfolderpath = value.Trim('"', '\\');
+                _symlinkpath = value.Trim('"', '\\');
                 NotifyPropertyChanged();
             }
-            get => _symlinkfolderpath;
+            get => _symlinkpath;
         }
 
         #endregion
@@ -68,14 +68,29 @@ namespace SymLink_Tools
 
         private void CreateSymlinks(object sender = null, EventArgs e = null)
         {
-            if (RootFoldersRadio.IsChecked ?? false)
+            if (FileRadio.IsChecked ?? false)
+                SymLink.CreateFile(RealPath, SymLinkPath);
+            else if (RootFoldersRadio.IsChecked ?? false)
                 SymLink.CreateFolder(RealPath, SymLinkPath);
-            if (SubfoldersRadio.IsChecked ?? false)
+            else if (SubfoldersRadio.IsChecked ?? false)
                 SymLink.CreateSubfolders(RealPath, SymLinkPath);
+            else
+                Console.Log("Error: No symlink type selected!");
         }
 
         private void PrintFolders(object sender = null, EventArgs e = null)
         {
+            if (FileRadio.IsChecked ?? false)
+            {
+                Console.Log($"{SymLinkPath}");
+                new Windows.DirectoryListing(SymLinkPath).ShowDialog();
+            }
+            if (SubfilesRadio.IsChecked ?? false)
+            {
+                var files = Directory.GetFiles(RealPath).ToList()
+                    .ConvertAll(file => $"{SymLinkPath}\\{new FileInfo(file).Name}");
+                new Windows.DirectoryListing(files);
+            }
             if (RootFoldersRadio.IsChecked ?? false)
             {
                 Console.Log($"{SymLinkPath}");
@@ -91,12 +106,18 @@ namespace SymLink_Tools
 
         private void FindReal(object sender = null, EventArgs e = null)
         {
-            RealPath = StorageHelper.FindFolder();
+            if (FileRadio.IsChecked ?? false)
+                RealPath = StorageHelper.FindFile();
+            else
+                RealPath = StorageHelper.FindFolder();
         }
 
         private void FindSym(object sender = null, EventArgs e = null)
         {
-            SymLinkPath = StorageHelper.FindFolder();
+            if (FileRadio.IsChecked ?? false)
+                SymLinkPath = StorageHelper.CreateFile().Replace(".symlink", string.Empty);
+            else
+                SymLinkPath = StorageHelper.FindFolder();
         }
 
         #endregion

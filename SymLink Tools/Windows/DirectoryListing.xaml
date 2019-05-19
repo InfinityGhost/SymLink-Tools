@@ -15,7 +15,7 @@
 
         <Grid Grid.Row="0">
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
-                       Text="Click to open the folder" FontWeight="Bold"/>
+                       Text="Click to open the link" FontWeight="Bold"/>
         </Grid>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

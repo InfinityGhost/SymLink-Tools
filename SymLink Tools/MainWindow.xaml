@@ -42,25 +42,25 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="5,0">
-                            <GroupBox Header="Real Folder Location">
+                            <GroupBox Header="Real Location">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="50"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBox Text="{Binding RealFolderPath, Mode=TwoWay}"/>
+                                    <TextBox Text="{Binding RealPath, Mode=TwoWay}"/>
                                     <Button Grid.Column="1" Content="Find" Click="FindReal"/>
                                 </Grid>
                             </GroupBox>
-                            <GroupBox Header="SymLink Folder Location">
+                            <GroupBox Header="SymLink Location">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="50"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBox Text="{Binding SymLinkFolderPath, Mode=TwoWay}"/>
+                                    <TextBox Text="{Binding SymLinkPath, Mode=TwoWay}"/>
                                     <Button Grid.Column="1" Content="Find" Click="FindSym"/>
                                 </Grid>
                             </GroupBox>
@@ -68,8 +68,10 @@
 
                         <GroupBox Grid.Column="1" Header="Type" VerticalAlignment="Top">
                             <StackPanel Margin="5">
-                                <RadioButton Content="Root folders" GroupName="symType" IsChecked="True" x:Name="RootFoldersRadio"/>
-                                <RadioButton Content="Subfolders" GroupName="symType" x:Name="SubfoldersRadio"/>
+                                <RadioButton Content="File" GroupName="symType" IsChecked="True" x:Name="FileRadio"/>
+                                <RadioButton Content="Folder\Files" GroupName="symType" x:Name="SubfilesRadio"/>
+                                <RadioButton Content="Folder" GroupName="symType" x:Name="RootFoldersRadio"/>
+                                <RadioButton Content="Folder\Subfolders" GroupName="symType" x:Name="SubfoldersRadio"/>
                             </StackPanel>
                         </GroupBox>
                     </Grid>
@@ -84,9 +86,9 @@
                             </Style>
                         </StackPanel.Resources>
 
-                        <Button Content="Open Real Folder" Click="OpenRealFolder"/>
-                        <Button Content="Create SymLinks" Click="CreateSymlinks"/>
-                        <Button Content="Show link folders" Click="PrintFolders"/>
+                        <Button Content="Open real link" Click="OpenRealFolder"/>
+                        <Button Content="Create SymLink(s)" Click="CreateSymlinks"/>
+                        <Button Content="Show links" Click="PrintFolders"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

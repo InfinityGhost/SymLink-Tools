@@ -17,6 +17,20 @@ namespace SymLink_Tools.Tools
                 return string.Empty;
         }
 
+        public static string CreateFile()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Create a file",
+                DefaultExt = ".symlink",
+                Filter = "Symbolic link|*.symlink",
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+                return dialog.FileName;
+            else
+                return string.Empty;
+        }
+
         public static string FindFolder()
         {
             var openDirectory = new FolderBrowserDialog
