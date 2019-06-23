@@ -91,6 +91,12 @@ namespace SymLink_Tools
             CMD.BeginOutputReadLine();
 
             Debugger.Log(0, this.GetType().Name, $"Running: {CMD.StartInfo.FileName} {CMD.StartInfo.Arguments}");
+
+            CMD.Exited += (a, b) =>
+            {
+                CMD.CancelOutputRead();
+                CMD.CancelErrorRead();
+            };
         }
 
         private void OutputDataHandler(object sender, DataReceivedEventArgs e)

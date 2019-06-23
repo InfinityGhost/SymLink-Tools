@@ -64,7 +64,7 @@ namespace SymLink_Tools.Controls
             if (!Debugger.IsAttached)
                 try
                 {
-                    File.AppendAllText($"{Directory.GetCurrentDirectory()}\\log.txt", Prefix + line + Environment.NewLine);
+                    App.Log(line);
                 }
                 catch
                 {
